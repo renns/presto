@@ -16,9 +16,11 @@ package com.facebook.presto.sql.gen;
 import com.facebook.presto.bytecode.BytecodeNode;
 import com.facebook.presto.bytecode.Variable;
 import com.facebook.presto.common.type.Type;
+import com.facebook.presto.metadata.BuiltInFunctionHandle;
 import com.facebook.presto.metadata.FunctionManager;
 import com.facebook.presto.operator.scalar.BuiltInScalarFunctionImplementation;
 import com.facebook.presto.spi.function.FunctionHandle;
+import com.facebook.presto.spi.function.InProcessScalarFunctionImplementation;
 import com.facebook.presto.spi.relation.RowExpression;
 import com.facebook.presto.sql.gen.BytecodeUtils.OutputBlockVariableAndType;
 
@@ -33,8 +35,15 @@ public class FunctionCallCodeGenerator
     public BytecodeNode generateCall(FunctionHandle functionHandle, BytecodeGeneratorContext context, Type returnType, List<RowExpression> arguments, Optional<Variable> outputBlockVariable)
     {
         FunctionManager functionManager = context.getFunctionManager();
+        BuiltInScalarFunctionImplementation function;
 
-        BuiltInScalarFunctionImplementation function = functionManager.getBuiltInScalarFunctionImplementation(functionHandle);
+        if (functionHandle instanceof BuiltInFunctionHandle) {
+            function = functionManager.getBuiltInScalarFunctionImplementation(functionHandle);
+        }
+        else {
+            InProcessScalarFunctionImplementation inProcessFunction = (InProcessScalarFunctionImplementation) functionManager.getScalarFunctionImplementation(functionHandle);
+            function = new BuiltInScalarFunctionImplementation(inProcessFunction);
+        }
 
         List<BytecodeNode> argumentsBytecode = new ArrayList<>();
         for (int i = 0; i < arguments.size(); i++) {

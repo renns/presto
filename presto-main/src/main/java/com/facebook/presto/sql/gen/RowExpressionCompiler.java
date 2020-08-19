@@ -109,6 +109,7 @@ public class RowExpressionCompiler
             BytecodeGeneratorContext generatorContext;
             switch (functionMetadata.getImplementationType()) {
                 case BUILTIN:
+                case INPROCESS:
                     generatorContext = new BytecodeGeneratorContext(
                             RowExpressionCompiler.this,
                             context.getScope(),

@@ -283,6 +283,9 @@ public class RowExpressionInterpreter
                         value = rowExpressionInterpreter.optimize();
                     }
                     break;
+                case INPROCESS:
+                    value = functionInvoker.invokeInProcess(functionHandle, session.getSqlFunctionProperties(), argumentValues);
+                    break;
                 default:
                     throw new IllegalArgumentException(format("Unsupported function implementation type: %s", functionMetadata.getImplementationType()));
             }
