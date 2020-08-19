@@ -936,6 +936,9 @@ public class ExpressionInterpreter
                             optimize);
                     result = functionInterpreter.visitor.process(function, context);
                     break;
+                case INPROCESS:
+                    result = functionInvoker.invokeInProcess(functionHandle, session.getSqlFunctionProperties(), argumentValues);
+                    break;
                 default:
                     throw new IllegalArgumentException(format("Unsupported function implementation type: %s", functionMetadata.getImplementationType()));
             }

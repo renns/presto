@@ -14,6 +14,7 @@
 package com.facebook.presto.operator.scalar;
 
 import com.facebook.presto.common.function.SqlFunctionProperties;
+import com.facebook.presto.spi.function.InProcessScalarFunctionImplementation;
 import com.facebook.presto.spi.function.ScalarFunctionImplementation;
 import com.google.common.collect.ImmutableList;
 
@@ -21,6 +22,7 @@ import java.lang.invoke.MethodHandle;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.facebook.presto.operator.scalar.BuiltInScalarFunctionImplementation.ArgumentType.FUNCTION_TYPE;
 import static com.facebook.presto.operator.scalar.BuiltInScalarFunctionImplementation.ArgumentType.VALUE_TYPE;
@@ -59,6 +61,25 @@ public final class BuiltInScalarFunctionImplementation
                         ReturnPlaceConvention.STACK,
                         methodHandle,
                         instanceFactory)));
+    }
+
+    public BuiltInScalarFunctionImplementation(InProcessScalarFunctionImplementation inProcessFunction)
+    {
+        this(ImmutableList.of(
+                new ScalarImplementationChoice(
+                    inProcessFunction.isNullable(),
+                    inProcessFunction
+                        .getArgumentProperties()
+                        .stream()
+                        .map(ap ->
+                            new ArgumentProperty(
+                                ArgumentType.valueOf(ap.getArgumentType().name()),
+                                ap.getNullConvention().map(nc -> NullConvention.valueOf(nc.name())),
+                                ap.getLambdaInterface()))
+                        .collect(Collectors.toList()),
+                    ReturnPlaceConvention.valueOf(inProcessFunction.getReturnPlaceConvention().name()),
+                    inProcessFunction.getMethodHandle(),
+                    inProcessFunction.getInstanceFactory())));
     }
 
     /**
