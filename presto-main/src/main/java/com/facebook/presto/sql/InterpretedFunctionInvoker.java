@@ -22,6 +22,8 @@ import com.facebook.presto.operator.scalar.BuiltInScalarFunctionImplementation;
 import com.facebook.presto.operator.scalar.BuiltInScalarFunctionImplementation.ArgumentProperty;
 import com.facebook.presto.spi.PrestoException;
 import com.facebook.presto.spi.function.FunctionHandle;
+import com.facebook.presto.spi.function.InProcessScalarFunctionImplementation;
+import com.facebook.presto.spi.function.ScalarFunctionImplementation;
 import com.google.common.base.Defaults;
 
 import java.lang.invoke.MethodHandle;
@@ -55,6 +57,14 @@ public class InterpretedFunctionInvoker
     public Object invoke(FunctionHandle functionHandle, SqlFunctionProperties properties, List<Object> arguments)
     {
         return invoke(functionManager.getBuiltInScalarFunctionImplementation(functionHandle), properties, arguments);
+    }
+
+    public Object invokeInProcess(FunctionHandle functionHandle, SqlFunctionProperties properties, List<Object> arguments)
+    {
+        ScalarFunctionImplementation function = functionManager.getScalarFunctionImplementation(functionHandle);
+        InProcessScalarFunctionImplementation inProcessFunction = (InProcessScalarFunctionImplementation) function;
+        BuiltInScalarFunctionImplementation builtInFunction = new BuiltInScalarFunctionImplementation(inProcessFunction);
+        return invoke(builtInFunction, properties, arguments);
     }
 
     /**

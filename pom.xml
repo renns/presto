@@ -33,6 +33,14 @@
         <tag>HEAD</tag>
     </scm>
 
+    <distributionManagement>
+        <repository>
+            <id>locus</id>
+            <name>Accur8 Releases</name>
+            <url>https://locus-beta.accur8.io/repos/releases</url>
+        </repository>
+    </distributionManagement>
+
     <properties>
         <air.main.basedir>${project.basedir}</air.main.basedir>
 

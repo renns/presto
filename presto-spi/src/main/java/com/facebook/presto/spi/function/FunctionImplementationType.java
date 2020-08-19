@@ -17,6 +17,7 @@ public enum FunctionImplementationType
 {
     BUILTIN(false),
     SQL(false),
+    INPROCESS(false),
     THRIFT(true);
 
     private final boolean external;
